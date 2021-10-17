@@ -27,9 +27,17 @@ services:
     #   KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
     #   KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181
     ports:
-      - 9092:9092 
+      - 19092:19092
     command: ["apache-kafka/bin/kafka-server-start.sh", "./server.properties"]
     
 
 
 # TOOD: use Kraft mode to avoid setting up Zookeeper, maybe integrating with Spark cluster
+
+# connection from Host (i.e. external network to docker-compose)
+# 1. client makes initial connection to localhost:19092 with "bootstrap_servers"
+## listeners=PLAINTEXT://:9092,PLAINTEXT_HOST://:19092
+# 2. broker returns host and port to subsequent connections
+## advertised.listeners=PLAINTEXT://kafka-1:9092,PLAINTEXT_HOST://localhost:19092
+# 3. client uses the returned host of PLAINTEXT_HOST protocol for subsequent connection
+

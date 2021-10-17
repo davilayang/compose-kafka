@@ -32,14 +32,16 @@ bin/kafka-console-consumer.sh --topic quickstart-events --from-beginning \
 Now, let's use the nc command to verify that both the servers are listening on the respective ports:
 
 ```bash
-nc -z localhost 22181
+nc -vz localhost 22181
 # Connection to localhost port 22181 [tcp/*] succeeded!
-nc -z localhost 29092
+docker exec -it <container-name> nc -vz localhost 29092
 # Connection to localhost port 29092 [tcp/*] succeeded!
 ```
 
 + https://www.baeldung.com/ops/kafka-docker-setup
 + https://kafka.apache.org/documentation
++ https://github.com/wurstmeister/kafka-docker/wiki/Connectivity
+ 
 
 # kafka with Kubernetes
 
