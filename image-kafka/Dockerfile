@@ -11,6 +11,13 @@ RUN mv kafka_2.13-3.0.0 apache-kafka
 COPY zookeeper.properties zookeeper.properties
 
 COPY server.properties server.properties
+COPY start_kafka.sh start_kafka.sh
+
+RUN chmod +x /app/start_kafka.sh
+
+ENV KFAKA_HOME=/app/apache-kafka
+
+# ENTRYPOINT [ "/app/start_kafka.sh" ]
 
 # docker build -t local/kafka -f image-kafka/Dockerfile
 # apache-kafka/bin/zookeeper-server-start.sh zookeeper.properties
