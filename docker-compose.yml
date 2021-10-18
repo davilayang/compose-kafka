@@ -7,16 +7,19 @@ services:
       context: ./image-kafka
       labels:
         cluster: kafka
+      args:
+        KAFKA_VERSION: 3.0.0
+        SCALA_VERSION: 2.13
     command: ["echo", "...build base image for Kafka cluster..."]
   zookeeper-1:
     depends_on: 
       - base
     image: local/kafka-base
-    # environment:
-    #   ZOOKEEPER_CLIENT_PORT: 2181
     expose:
       - 2181
-    command: ["apache-kafka/bin/zookeeper-server-start.sh", "./zookeeper.properties"]
+    command: 
+      - apache-kafka/bin/zookeeper-server-start.sh 
+      - /app/zookeeper.properties
   kafka-1:
     depends_on:
       - base

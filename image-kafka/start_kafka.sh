@@ -50,4 +50,3 @@ echo "" >> "/app/server.properties"
 
 # start the broker
 /app/apache-kafka/bin/kafka-server-start.sh /app/server.properties
-

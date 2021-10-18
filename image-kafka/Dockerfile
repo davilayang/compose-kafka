@@ -1,25 +1,26 @@
 FROM openjdk:8-jre-buster
 
-
 WORKDIR /app
-
-RUN wget https://dlcdn.apache.org/kafka/3.0.0/kafka_2.13-3.0.0.tgz &&\
-  tar -xf kafka_2.13-3.0.0.tgz
-
-RUN mv kafka_2.13-3.0.0 apache-kafka
-
-COPY zookeeper.properties zookeeper.properties
-
-COPY server.properties server.properties
-COPY start_kafka.sh start_kafka.sh
-
-RUN chmod +x /app/start_kafka.sh
 
 ENV KFAKA_HOME=/app/apache-kafka
 
-# ENTRYPOINT [ "/app/start_kafka.sh" ]
+ARG KAFKA_VERSION
+ARG SCALA_VERSION
 
-# docker build -t local/kafka -f image-kafka/Dockerfile
+RUN wget https://dlcdn.apache.org/kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz &&\
+  tar -xf kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz && \
+  mv kafka_${SCALA_VERSION}-${KAFKA_VERSION} apache-kafka && \
+  rm kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz
+
+# copy zookeeper configuration
+COPY zookeeper.properties zookeeper.properties
+
+# copy kafka configuration and update script
+COPY server.properties server.properties
+
+COPY start_kafka.sh start_kafka.sh
+RUN chmod +x /app/start_kafka.sh
+
+# docker build -t local/kafka-base -f image-kafka/Dockerfile
 # apache-kafka/bin/zookeeper-server-start.sh zookeeper.properties
 # apache-kafka/bin/kafka-server-start.sh server.properties
-
