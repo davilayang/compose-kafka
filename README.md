@@ -1,6 +1,5 @@
 # Kafka with Docker Compose
 
-
 ## 
 
 ```bash

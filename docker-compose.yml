@@ -29,10 +29,22 @@ services:
     ports:
       - 19092:19092
     command: ["apache-kafka/bin/kafka-server-start.sh", "./server.properties"]
+  kafka-2:
+    depends_on:
+      - base
+      - zookeeper-1
+    build: 
+      context: ./image-kafka-2
+      labels:
+        cluster: kafka
+    image: local/kafka-base-2
+    ports:
+      - 29092:29092
+    command: ["apache-kafka/bin/kafka-server-start.sh", "./server.properties"]
     
 
 
-# TOOD: use Kraft mode to avoid setting up Zookeeper, maybe integrating with Spark cluster
+# TOOD: use Kraft mode to avoid setting up Zookeeper, maybe integrating with compose-spark cluster
 
 # connection from Host (i.e. external network to docker-compose)
 # 1. client makes initial connection to localhost:19092 with "bootstrap_servers"
