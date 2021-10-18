@@ -1,17 +1,13 @@
 ### defining variables ###
 
 TOPIC_NAME = "quickstart-events"
-HOST_BOOTSTRAP_SERVER = "localhost:19092"
+HOST_BOOTSTRAP_SERVER = "localhost:19092" # or localhost:29092
 CLIENT_ID="test-id"
 
 
 ### creating a topic ###
 from kafka.admin import KafkaAdminClient, NewTopic
 
-# bootstrap_servers for initial connection only, 
-# it gets host:port for subsequent connections
-# https://stackoverflow.com/questions/60847050/what-is-the-difference-between-advertised-listeners-and-bootstrap-servers
-# https://rmoff.net/2018/08/02/kafka-listeners-explained/
 admin_client = KafkaAdminClient(
   bootstrap_servers=HOST_BOOTSTRAP_SERVER, 
   client_id=CLIENT_ID,
