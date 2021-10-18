@@ -16,7 +16,7 @@ services:
       - base
     image: local/kafka-base
     expose:
-      - 2181
+      - 2181 # default port for zookeeper
     command: 
       - apache-kafka/bin/zookeeper-server-start.sh 
       - /app/zookeeper.properties
@@ -25,7 +25,7 @@ services:
       - base
       - zookeeper-1
     image: local/kafka-base
-    environment:
+    environment: # KAFKA variables are processed by start_kafka.sh
       KAFKA_BROKER_ID: 1 
       KAFKA_LISTENERS: PLAINTEXT://:9092,PLAINTEXT_HOST://:19092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:9092,PLAINTEXT_HOST://localhost:19092
@@ -51,12 +51,4 @@ services:
     entrypoint: 
       - /app/start_kafka.sh
 
-# TOOD: use Kraft mode to avoid setting up Zookeeper, maybe integrating with compose-spark cluster
-
-# connection from Host (i.e. external network to docker-compose)
-# 1. client makes initial connection to localhost:19092 with "bootstrap_servers"
-## listeners=PLAINTEXT://:9092,PLAINTEXT_HOST://:19092
-# 2. broker returns host and port to subsequent connections
-## advertised.listeners=PLAINTEXT://kafka-1:9092,PLAINTEXT_HOST://localhost:19092
-# 3. client uses the returned host of PLAINTEXT_HOST protocol for subsequent connection
-
+# TOOD: use Kraft mode to avoid starting up Zookeeper
