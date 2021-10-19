@@ -47,8 +47,8 @@ spec:
         # with single zookeeper, most are not necessary
         - name: JMXAUTH
           value: "false"
-        - name: JMXDISABLE
-          value: "false"
+        - name: JMXDISABLE # Java Management Extension, change to disable
+          value: "true"
         - name: JMXPORT
           value: "1099"
         - name: JMXSSL
