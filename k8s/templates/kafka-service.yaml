@@ -1,7 +1,9 @@
 apiVersion: "v1"
 kind: "Service"
 metadata:
-  name: "minikube-kafka-headless"
+  name: "minikube-kafka-headless" 
+  # statefuset requires a headless service, 
+  # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
   labels: &KafkaDeploymentLabels
     app.kubernetes.io/name: minikube
     app.kubernetes.io/component: kafka

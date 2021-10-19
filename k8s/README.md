@@ -27,9 +27,20 @@ kubectl apply -f k8s/templates/zk-services.yaml
 kubectl apply -f k8s/templates/zk-statefulset.yaml
 
 # kafka
+kubectl apply -f k8s/templates/kafka-secrets.yaml
+kubectl apply -f k8s/templates/kafka-service.yaml
+kubectl apply -f k8s/templates/kafka-poddisruptionbudget.yaml
+kubectl apply -f k8s/templates/kafka-statefulset.yaml
+
+# test with kcat, i.e. kafkacat
 
 # final clean up
 minikube delete --all
+```
+
+```bash
+# run a temporary pod
+kubectl run -it --rm temp-pod --image busybox -- sh 
 ```
 
 
