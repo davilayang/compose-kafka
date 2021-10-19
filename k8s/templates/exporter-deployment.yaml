@@ -2,9 +2,9 @@
 apiVersion: "v1"
 kind: "Service"
 metadata:
-  name: {{ .Release.Name }}-kafka-exporter
+  name: minikube-kafka-exporter
   labels: &KafkaDeploymentLabels
-    app.kubernetes.io/name: {{ .Release.Name }}
+    app.kubernetes.io/name: minikube
     app.kubernetes.io/component: kafka-exporter
 spec:
   type: "ClusterIP"
@@ -18,9 +18,9 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-kafka-exporter
+  name: minikube-kafka-exporter
   labels: &KafkaDeploymentLabels
-    app.kubernetes.io/name: {{ .Release.Name }}
+    app.kubernetes.io/name: minikube
     app.kubernetes.io/component: kafka-exporter
 spec:
   selector:
@@ -51,17 +51,17 @@ spec:
                 --sasl.password=$K_PASSWORD \
                 --sasl.enabled \
                 --sasl.mechanism=plain \
-                --kafka.server={{ .Release.Name }}-kafka-client:9092
+                --kafka.server=minikube-kafka-client:9092
           env:
           - name: K_USER
             valueFrom:
               secretKeyRef:
-                name: {{ .Release.Name }}-kafka-secrets
+                name: minikube-kafka-secrets
                 key: kafka_user
           - name: K_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ .Release.Name }}-kafka-secrets
+                name: minikube-kafka-secrets
                 key: kafka_password
           livenessProbe:
             initialDelaySeconds: 20
@@ -109,7 +109,7 @@ spec:
               REPLICAS=1
               COUNTER=0;
               while [  $COUNTER -lt 30 ]; do
-                echo dump | nc {{ .Release.Name }}-zk-client 2181 | grep brokers | wc -l | grep $REPLICAS && exit 0;
+                echo dump | nc minikube-zk-client 2181 | grep brokers | wc -l | grep $REPLICAS && exit 0;
                 let COUNTER=COUNTER+1;
                 sleep 1
               done;

@@ -1,9 +1,9 @@
 apiVersion: "v1"
 kind: "Service"
 metadata:
-  name: "{{ .Release.Name }}-kafka-headless"
+  name: "minikube-kafka-headless"
   labels: &KafkaDeploymentLabels
-    app.kubernetes.io/name: {{ .Release.Name }}
+    app.kubernetes.io/name: minikube
     app.kubernetes.io/component: kafka
 spec:
   type: "ClusterIP"
@@ -22,9 +22,9 @@ spec:
 apiVersion: "v1"
 kind: "Service"
 metadata:
-  name: "{{ .Release.Name }}-kafka-client"
+  name: "minikube-kafka-client"
   labels: &KafkaDeploymentLabels
-    app.kubernetes.io/name: {{ .Release.Name }}
+    app.kubernetes.io/name: minikube
     app.kubernetes.io/component: kafka
 spec:
   type: "ClusterIP"

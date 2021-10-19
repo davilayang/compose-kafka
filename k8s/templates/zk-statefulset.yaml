@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-zk
+  name: minikube-zk
   labels: &ZookeeperDeploymentLabels
-    app.kubernetes.io/name: {{ .Release.Name }}
+    app.kubernetes.io/name: minikube
     app.kubernetes.io/component: zookeeper
 spec:
-  serviceName: {{ .Release.Name }}-zk-headless
+  serviceName: minikube-zk-headless
   replicas: 3
   selector:
     matchLabels: *ZookeeperDeploymentLabels
@@ -102,7 +102,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ .Release.Name }}-zk-config-scripts
+            name: minikube-zk-config-scripts
             defaultMode: 0555
   volumeClaimTemplates:
   - metadata:
