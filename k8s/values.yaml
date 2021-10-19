@@ -1,0 +1,41 @@
+kafka:
+  image:
+    repo: marketplace.gcr.io/google/kafka
+    tag: 2.8
+  replicas: 3
+  # if set "true", kafka will be deployed as standalone mode with
+  # single kafka and zookeeper instances and no any authentication.
+  # Don't set true for production deployment
+  standalone: false
+
+  # Kafka user and password
+  kUser: kafka
+  kPassword: null 
+  # password is generate by this command
+  # alias generate_pwd="cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 20 | head -n 1 | tr -d '\n'"
+
+metrics:
+  image: marketplace.gcr.io/google/kafka/prometheus-to-sd:2.8
+  enabled: true
+  exporter:
+    enabled: false
+
+persistence:
+  storageClass: standard
+  kafka:
+    storageSize: "10Gi"
+  zookeeper:
+    storageSize: "5Gi"
+
+zookeeper:
+  image: marketplace.gcr.io/google/kafka/zookeeper:2.8
+
+exporter:
+  image: marketplace.gcr.io/google/kafka/exporter:2.8
+
+deployer:
+  image: marketplace.gcr.io/google/kafka/deployer:2.8
+
+
+# N.B. values are added from README
+# https://github.com/GoogleCloudPlatform/click-to-deploy/tree/master/k8s/kafka

@@ -1,0 +1,121 @@
+{{- if .Values.metrics.enabled }}
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  name: minikube-kafka-exporter
+  labels: &KafkaDeploymentLabels
+    app.kubernetes.io/name: minikube
+    app.kubernetes.io/component: kafka-exporter
+spec:
+  type: "ClusterIP"
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - port: 9308
+      name: "kafka-client"
+  selector: *KafkaDeploymentLabels
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minikube-kafka-exporter
+  labels: &KafkaDeploymentLabels
+    app.kubernetes.io/name: minikube
+    app.kubernetes.io/component: kafka-exporter
+spec:
+  selector:
+    matchLabels: *KafkaDeploymentLabels
+  replicas: 1
+  revisionHistoryLimit: 1
+  template:
+    metadata:
+      labels: *KafkaDeploymentLabels
+    spec:
+      affinity:
+        null
+      containers:
+        - name: exporter
+          image: "{{ .Values.exporter.image }}"
+          imagePullPolicy: IfNotPresent
+          resources:
+            {}
+          ports:
+            - containerPort: 9308
+              name: kafka-client
+          command:
+            - bash
+            - -c
+            - |
+                kafka_exporter \
+                --sasl.username=$K_USER \
+                --sasl.password=$K_PASSWORD \
+                --sasl.enabled \
+                --sasl.mechanism=plain \
+                --kafka.server=minikube-kafka-client:9092
+          env:
+          - name: K_USER
+            valueFrom:
+              secretKeyRef:
+                name: minikube-kafka-secrets
+                key: kafka_user
+          - name: K_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: minikube-kafka-secrets
+                key: kafka_password
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            httpGet:
+              path: "/metrics"
+              port: 9308
+          readinessProbe:
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            httpGet:
+              path: "/metrics"
+              port: 9308
+        {{- if .Values.metrics.exporter.enabled }}
+        - name: prometheus-to-sd
+          image: {{ .Values.metrics.image }}
+          command:
+          - /monitor
+          - --stackdriver-prefix=custom.googleapis.com
+          - --source=kafka:http://localhost:9308/metrics
+          - --pod-id=$(POD_NAME)
+          - --namespace-id=$(POD_NAMESPACE)
+          - --monitored-resource-types=k8s
+          env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        {{- end }}
+
+      initContainers:
+        - name: check-kafka-brokers
+          image: {{ .Values.deployer.image }}
+          imagePullPolicy: IfNotPresent
+          command:
+            - 'sh'
+            - '-c'
+            - |
+
+              REPLICAS={{ .Values.kafka.replicas}}
+              REPLICAS=1
+              COUNTER=0;
+              while [  $COUNTER -lt 30 ]; do
+                echo dump | nc minikube-zk-client 2181 | grep brokers | wc -l | grep $REPLICAS && exit 0;
+                let COUNTER=COUNTER+1;
+                sleep 1
+              done;
+              echo "Did NOT see all Kafka broker instances alive after 30 secs!";
+              exit 1;
+
+{{- end }}
+
+# this is for exporting the metrics, so you need an exporter

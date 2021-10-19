@@ -1,0 +1,12 @@
+# apiVersion: "policy/v1beta1" # not available in minikube v1.21+
+apiVersion: "policy/v1"
+kind: "PodDisruptionBudget"
+metadata:
+  name: "minikube-kafka-pdb"
+  labels: &KafkaDeploymentLabels
+    app.kubernetes.io/name: minikube
+    app.kubernetes.io/component: kafka
+spec:
+  selector:
+    matchLabels: *KafkaDeploymentLabels
+  maxUnavailable: 1
