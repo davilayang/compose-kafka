@@ -28,13 +28,13 @@ persistence:
     storageSize: "5Gi"
 
 zookeeper:
-  image: marketplace.gcs.io/google/kafka/zookeeper:2.8
+  image: marketplace.gcr.io/google/kafka/zookeeper:2.8
 
 exporter:
-  image: marketplace.gcs.io/google/kafka/exporter:2.8
+  image: marketplace.gcr.io/google/kafka/exporter:2.8
 
 deployer:
-  image: marketplace.gcs.io/google/kafka/deployer:2.8
+  image: marketplace.gcr.io/google/kafka/deployer:2.8
 
 
 # N.B. values are added from README

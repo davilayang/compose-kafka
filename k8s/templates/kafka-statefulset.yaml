@@ -9,7 +9,7 @@ spec:
   selector:
     matchLabels: *KafkaDeploymentLabels
   serviceName: minikube-kafka-headless
-  replicas: {{ .Values.kafka.replicas }}
+  replicas: 3 # in production, you'll want more than 1 for high availability 
   updateStrategy:
         type: RollingUpdate
   template:
@@ -31,7 +31,7 @@ spec:
               mode: 0555
       initContainers:
         - name: check-zk
-          image: {{ .Values.deployer.image }}
+          image: {{ .Values.deployer.image }} # using deployer image for initContainer
           command:
             - 'sh'
             - '-c'
@@ -59,7 +59,7 @@ spec:
               exit 1;
       containers:
         - name: kafka
-          image: "{{ .Values.kafka.image.repo }}:{{ .Values.kafka.image.tag }}"
+          image: "{{ .Values.kafka.image.repo }}:{{ .Values.kafka.image.tag }}" # something like marketplace xxx kafka:2.8
           imagePullPolicy: IfNotPresent
           ports:
             - name: kafka-client
@@ -92,7 +92,7 @@ spec:
             - name: KAFKA_LOG_DIRS
               value: "/kafka/logs"
             - name: KAFKA_ZOOKEEPER_CONNECT
-              value: "minikube-zk-client.{{ .Release.Namespace }}.svc.cluster.local:2181"
+              value: "minikube-zk-client.default.svc.cluster.local:2181" # use "default" for minikube testing
             - name: KAFKA_OPTS
               value: "-Djava.security.auth.login.config=/tmp/kafka_server_jaas.conf"
             - name: KAFKA_SASL_ENABLED_MECHANISMS
@@ -131,10 +131,10 @@ spec:
 
   volumeClaimTemplates:
     - metadata:
-        name: logdir
+        name: logdir # for zookeeper logs
       spec:
         accessModes: [ "ReadWriteOnce" ]
-        storageClassName: {{ .Values.persistence.storageClass }}
+        storageClassName: standard
         resources:
           requests:
-            storage: {{ .Values.persistence.kafka.storageSize }}
+            storage: 5Gi 

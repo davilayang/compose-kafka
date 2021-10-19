@@ -1,11 +1,35 @@
 # Apache Kafka on Kubernetes
 
 ```bash
+# get the necessary images
+gcloud auth configure-docker 
+
+docker pull marketplace.gcr.io/google/kafka/zookeeper:2.8
+docker pull marketplace.gcr.io/google/kafka:2.8
+```
+
+```bash
 minikube start
 minikube dashboard
 
-# create namespace
-kubectl create namespace kafka
+# add the images from host
+minikube image load marketplace.gcr.io/google/kafka/zookeeper:2.8
+minikube image load marketplace.gcr.io/google/kafka:2.8
+
+# shell into the minikube cluster
+minikube ssh
+docker image ls # list the docker images on cluster
+
+## could just give the directory ## 
+# zookeeper
+kubectl apply -f k8s/templates/zk-config-scripts.yaml
+kubectl apply -f k8s/templates/zk-services.yaml
+kubectl apply -f k8s/templates/zk-statefulset.yaml
+
+# kafka
+
+# final clean up
+minikube delete --all
 ```
 
 

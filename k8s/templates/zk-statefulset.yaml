@@ -9,7 +9,7 @@ spec:
   serviceName: minikube-zk-headless
   replicas: 3
   selector:
-    matchLabels: *ZookeeperDeploymentLabels
+    matchLabels: *ZookeeperDeploymentLabels # from the labels on line 5
   podManagementPolicy: "Parallel"
   template:
     metadata:
@@ -27,8 +27,10 @@ spec:
               topologyKey: "kubernetes.io/hostname"
       containers:
       - name: zookeeper
-        imagePullPolicy: Always
-        image: {{ .Values.zookeeper.image }}
+        image: marketplace.gcr.io/google/kafka/zookeeper:2.8
+        imagePullPolicy: Never
+        # how to pull those images to local? gcloud auth configure-docker, then pull
+        # TODO: replace with local built image, local/kafka-base
         resources:
           requests:
             memory: "1250Mi"
@@ -40,7 +42,9 @@ spec:
           name: server
         - containerPort: 3888
           name: leader-election
-        env:
+        env: # environment variables are processed by start.sh in ConfigMap
+        # these variables are for cluster deployment of Zookeeper, i.e. multiple zookeepers for high-availability
+        # with single zookeeper, most are not necessary
         - name: JMXAUTH
           value: "false"
         - name: JMXDISABLE
@@ -77,7 +81,7 @@ spec:
             - /bin/bash
             - -ec
             - |
-              echo ruok | nc 127.0.0.1 ${1:-2181}
+              echo ruok | nc 127.0.0.1 2181
           initialDelaySeconds: 10
           timeoutSeconds: 5
         livenessProbe:
@@ -87,29 +91,32 @@ spec:
             - -ec
             - |
               zkServer.sh status
+        # zkServer.sh is defined in the GCP image, under /apache-folder/bin
         command:
         - /bin/bash
         - -ec
-        - /config-scripts/start.sh
+        - /config-scripts/start.sh # call the script start.sh from ConfigMap to start zookeeper
         volumeMounts:
         - name: config
-          mountPath: /config-scripts
-        - name: datadir
-          mountPath: /opt/zookeeper
+          mountPath: /config-scripts # config is mounted at /config-scripts subdirectory
+        - name: datadir # name of persistent volume claim
+          mountPath: /opt/zookeeper  # persistent volume mounted path,
+          # but why this path? it's not the dataDir for zookeeper, that is set to /data
+          # maybe some mistake from google?
       securityContext:
         runAsUser: 1000
         fsGroup: 1000
       volumes:
         - name: config
           configMap:
-            name: minikube-zk-config-scripts
+            name: minikube-zk-config-scripts # configMap defined by zk-config-script.yaml
             defaultMode: 0555
   volumeClaimTemplates:
   - metadata:
       name: datadir
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: {{ .Values.persistence.storageClass }}
+      storageClassName: standard
       resources:
         requests:
-          storage: {{ .Values.persistence.zookeeper.storageSize }}
+          storage: 5Gi
