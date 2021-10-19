@@ -109,3 +109,6 @@ spec:
     kind: ConfigMap
   - group: v1
     kind: ServiceAccount
+
+# this Application kind is not part of the Kubernetes native kind
+# so it's likely something from GCP to manage the applications

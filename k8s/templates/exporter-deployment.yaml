@@ -47,14 +47,11 @@ spec:
             - -c
             - |
                 kafka_exporter \
-          {{- if not .Values.kafka.standalone}}
                 --sasl.username=$K_USER \
                 --sasl.password=$K_PASSWORD \
                 --sasl.enabled \
                 --sasl.mechanism=plain \
-          {{- end }}
                 --kafka.server={{ .Release.Name }}-kafka-client:9092
-          {{- if not .Values.kafka.standalone}}
           env:
           - name: K_USER
             valueFrom:
@@ -66,7 +63,6 @@ spec:
               secretKeyRef:
                 name: {{ .Release.Name }}-kafka-secrets
                 key: kafka_password
-        {{- end }}
           livenessProbe:
             initialDelaySeconds: 20
             periodSeconds: 10
@@ -109,11 +105,8 @@ spec:
             - '-c'
             - |
 
-        {{- if (not .Values.kafka.standalone)}}
               REPLICAS={{ .Values.kafka.replicas}}
-        {{- else }}
               REPLICAS=1
-        {{- end }}
               COUNTER=0;
               while [  $COUNTER -lt 30 ]; do
                 echo dump | nc {{ .Release.Name }}-zk-client 2181 | grep brokers | wc -l | grep $REPLICAS && exit 0;
@@ -124,3 +117,5 @@ spec:
               exit 1;
 
 {{- end }}
+
+# this is for exporting the metrics, so you need an exporter
