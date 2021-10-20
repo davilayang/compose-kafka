@@ -57,18 +57,18 @@ kafkacat -P -b minikube-kafka-client -t test-topic
 kafkacat -C -b minikube-kafka-client -t test-topic
 ```
 
+Clean up
+
 ```bash
-# final clean up
 minikube delete --all
 ```
 
-```bash
-# run a temporary pod
-kubectl run -it --rm temp-pod --image busybox -- sh 
-```
+**TODO**:  
 
++ interacting from outside the cluster, i.e. host network
++ ... 
 
-## 
+## Ref
 
 **TODO: kafka on kubernetes**
 
