@@ -46,9 +46,9 @@ spec:
         # these variables are for cluster deployment of Zookeeper, i.e. multiple zookeepers for high-availability
         # with single zookeeper, most are not necessary
         - name: JMXAUTH
-          value: "false" # N.B. change to false for testing with minikube
+          value: "false" 
         - name: JMXDISABLE # Java Management Extension, change to disable
-          value: "true"
+          value: "false"
         - name: JMXPORT
           value: "1099"
         - name: JMXSSL
@@ -84,13 +84,13 @@ spec:
               echo ruok | nc 127.0.0.1 2181
           initialDelaySeconds: 10
           timeoutSeconds: 5
-        # livenessProbe:
-        #   exec:
-        #     command:
-        #     - /bin/bash
-        #     - -ec
-        #     - |
-        #       zkServer.sh status
+        livenessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -ec
+            - |
+              zkServer.sh status
         command:
         - /bin/bash
         - -ec
@@ -99,7 +99,8 @@ spec:
         - name: config
           mountPath: /config-scripts # config is mounted at /config-scripts subdirectory
         - name: datadir # name of persistent volume claim
-          mountPath: /opt/zookeeper  # persistent volume mounted path,
+          mountPath: /data  # as line 76 of ZK_DATA_DIR
+          # mountPath: /opt/zookeeper  # persistent volume mounted path,
           # but why this path? it's not the dataDir for zookeeper, that is set to /data
           # maybe some mistake from google?
       securityContext:

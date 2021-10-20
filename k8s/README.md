@@ -24,7 +24,6 @@ minikube image load marketplace.gcr.io/google/kafka:2.8
 minikube ssh
 docker image ls # list the docker images on cluster
 
-## could just give the directory ## 
 # zookeeper
 kubectl apply -f k8s/zk-config-scripts.yaml
 kubectl apply -f k8s/zk-services.yaml
@@ -47,14 +46,14 @@ minikube image load edenhill/kcat:1.7.0
 kubectl run --rm -it kcat-client --command sh --image edenhill/kcat:1.7.0
 
 # list brokers and topics in the cluster
-kafkacat -L -b minikube-kafka-client # minikube-kafka-client is kafka service name
+kcat -L -b minikube-kafka-client # minikube-kafka-client is kafka service name
 
 # produce message to topic "test-topic", this also creates the topic "test-topic"
-kafkacat -P -b minikube-kafka-client -t test-topic 
+kcat -P -b minikube-kafka-client -t test-topic 
 ## type the message at each line, then Ctrl+D
 
 # consume messages from topic "test-topic"
-kafkacat -C -b minikube-kafka-client -t test-topic
+kcat -C -b minikube-kafka-client -t test-topic
 ```
 
 Clean up
