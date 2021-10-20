@@ -26,15 +26,15 @@ docker image ls # list the docker images on cluster
 
 ## could just give the directory ## 
 # zookeeper
-kubectl apply -f k8s/templates/zk-config-scripts.yaml
-kubectl apply -f k8s/templates/zk-services.yaml
-kubectl apply -f k8s/templates/zk-statefulset.yaml
+kubectl apply -f k8s/zk-config-scripts.yaml
+kubectl apply -f k8s/zk-services.yaml
+kubectl apply -f k8s/zk-statefulset.yaml
 
 # kafka
-kubectl apply -f k8s/templates/kafka-secrets.yaml
-kubectl apply -f k8s/templates/kafka-service.yaml
-kubectl apply -f k8s/templates/kafka-poddisruptionbudget.yaml
-kubectl apply -f k8s/templates/kafka-statefulset.yaml
+kubectl apply -f k8s/kafka-secrets.yaml
+kubectl apply -f k8s/kafka-service.yaml
+kubectl apply -f k8s/kafka-poddisruptionbudget.yaml
+kubectl apply -f k8s/kafka-statefulset.yaml
 ```
 
 Test with kafkacat, or kcat
