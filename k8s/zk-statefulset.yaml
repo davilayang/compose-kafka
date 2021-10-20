@@ -48,7 +48,7 @@ spec:
         - name: JMXAUTH
           value: "false" 
         - name: JMXDISABLE # Java Management Extension, change to disable
-          value: "false"
+          value: "true" # false to disable JMX
         - name: JMXPORT
           value: "1099"
         - name: JMXSSL

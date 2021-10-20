@@ -15,8 +15,10 @@ services:
     depends_on: 
       - base
     image: local/kafka-base
-    expose:
-      - 2181 # default port for zookeeper
+    # expose:
+    #   - 2181 # default port for zookeeper
+    ports:
+      - 2181:2181
     command: 
       - apache-kafka/bin/zookeeper-server-start.sh 
       - /app/zookeeper.properties
