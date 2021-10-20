@@ -1,5 +1,7 @@
 # Apache Kafka on Kubernetes
 
+Prepare the docker images
+
 ```bash
 # get the necessary images
 gcloud auth configure-docker 
@@ -8,8 +10,10 @@ docker pull marketplace.gcr.io/google/kafka/zookeeper:2.8
 docker pull marketplace.gcr.io/google/kafka:2.8
 ```
 
+Start cluster with minikube
+
 ```bash
-minikube start
+minikube start --cpus 4 --memory 12g
 minikube dashboard
 
 # add the images from host
@@ -31,9 +35,29 @@ kubectl apply -f k8s/templates/kafka-secrets.yaml
 kubectl apply -f k8s/templates/kafka-service.yaml
 kubectl apply -f k8s/templates/kafka-poddisruptionbudget.yaml
 kubectl apply -f k8s/templates/kafka-statefulset.yaml
+```
 
-# test with kcat, i.e. kafkacat
+Test with kafkacat, or kcat
 
++ https://github.com/edenhill/kcat
+
+```bash
+docker pull edenhill/kcat:1.7.0
+minikube image load edenhill/kcat:1.7.0
+kubectl run --rm -it kcat-client --command sh --image edenhill/kcat:1.7.0
+
+# list brokers and topics in the cluster
+kafkacat -L -b minikube-kafka-client # minikube-kafka-client is kafka service name
+
+# produce message to topic "test-topic", this also creates the topic "test-topic"
+kafkacat -P -b minikube-kafka-client -t test-topic 
+## type the message at each line, then Ctrl+D
+
+# consume messages from topic "test-topic"
+kafkacat -C -b minikube-kafka-client -t test-topic
+```
+
+```bash
 # final clean up
 minikube delete --all
 ```

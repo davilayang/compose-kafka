@@ -29,6 +29,7 @@ spec:
             - key: kafka_server_jaas.conf
               path: kafka_server_jaas.conf
               mode: 0555
+      # N.B. not needed with minikube, as we'll deploy zookeeper then kafka brokers
       # initContainers:
       #   - name: check-zk
       #     image: {{ .Values.deployer.image }} # using deployer image for initContainer
@@ -63,7 +64,6 @@ spec:
       containers:
         - name: kafka
           image: marketplace.gcr.io/google/kafka:2.8
-          # image: "{{ .Values.kafka.image.repo }}:{{ .Values.kafka.image.tag }}" # something like marketplace xxx kafka:2.8
           imagePullPolicy: Never
           ports:
             - name: kafka-client
@@ -141,4 +141,4 @@ spec:
         storageClassName: standard
         resources:
           requests:
-            storage: 5Gi 
+            storage: 1Gi 

@@ -1,4 +1,4 @@
-apiVersion: policy/v1beta1
+apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: minikube-zk-pdb
@@ -11,3 +11,6 @@ spec:
       app.kubernetes.io/name: minikube
       app.kubernetes.io/component: zookeeper
   maxUnavailable: 2
+
+# N.B. change apiVersion to work with minikube
+# original: policy/v1beta1

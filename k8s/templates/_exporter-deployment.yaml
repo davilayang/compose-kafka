@@ -118,4 +118,4 @@ spec:
 
 {{- end }}
 
-# this is for exporting the metrics, so you need an exporter
+# N.B. this is for exporting the metrics on GKE, so not needed on minikube

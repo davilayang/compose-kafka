@@ -6,30 +6,30 @@ metadata:
     app.kubernetes.io/name: minikube
     app.kubernetes.io/component: zookeeper
 spec:
-  serviceName: minikube-zk-headless
+  serviceName: minikube-zk-headless # refer to the headless service
   replicas: 3
   selector:
-    matchLabels: *ZookeeperDeploymentLabels # from the labels on line 5
+    matchLabels: *ZookeeperDeploymentLabels # copy from labels on line 5
   podManagementPolicy: "Parallel"
   template:
     metadata:
       labels: *ZookeeperDeploymentLabels
     spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: "app.kubernetes.io/component"
-                    operator: In
-                    values:
-                    - zookeeper
-              topologyKey: "kubernetes.io/hostname"
+      # N.B. only one node on minikube, this will prevent the second pod from starting
+      # affinity:
+      #   podAntiAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       - labelSelector:
+      #           matchExpressions:
+      #             - key: "app.kubernetes.io/component"
+      #               operator: In
+      #               values:
+      #               - zookeeper
+      #         topologyKey: "kubernetes.io/hostname"
       containers:
       - name: zookeeper
         image: marketplace.gcr.io/google/kafka/zookeeper:2.8
         imagePullPolicy: Never
-        # how to pull those images to local? gcloud auth configure-docker, then pull
         # TODO: replace with local built image, local/kafka-base
         resources:
           requests:
@@ -46,7 +46,7 @@ spec:
         # these variables are for cluster deployment of Zookeeper, i.e. multiple zookeepers for high-availability
         # with single zookeeper, most are not necessary
         - name: JMXAUTH
-          value: "false"
+          value: "false" # N.B. change to false for testing with minikube
         - name: JMXDISABLE # Java Management Extension, change to disable
           value: "true"
         - name: JMXPORT
@@ -84,14 +84,13 @@ spec:
               echo ruok | nc 127.0.0.1 2181
           initialDelaySeconds: 10
           timeoutSeconds: 5
-        livenessProbe:
-          exec:
-            command:
-            - /bin/bash
-            - -ec
-            - |
-              zkServer.sh status
-        # zkServer.sh is defined in the GCP image, under /apache-folder/bin
+        # livenessProbe:
+        #   exec:
+        #     command:
+        #     - /bin/bash
+        #     - -ec
+        #     - |
+        #       zkServer.sh status
         command:
         - /bin/bash
         - -ec
@@ -119,4 +118,4 @@ spec:
       storageClassName: standard
       resources:
         requests:
-          storage: 5Gi
+          storage: 3Gi
