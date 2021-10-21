@@ -10,27 +10,15 @@ spec:
   replicas: 3
   selector:
     matchLabels: *ZookeeperDeploymentLabels # copy from labels on line 5
-  podManagementPolicy: "Parallel"
+  podManagementPolicy: "Parallel" # pods are created in parallel, not ordered
   template:
     metadata:
       labels: *ZookeeperDeploymentLabels
     spec:
-      # N.B. only one node on minikube, this will prevent the second pod from starting
-      # affinity:
-      #   podAntiAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #       - labelSelector:
-      #           matchExpressions:
-      #             - key: "app.kubernetes.io/component"
-      #               operator: In
-      #               values:
-      #               - zookeeper
-      #         topologyKey: "kubernetes.io/hostname"
       containers:
       - name: zookeeper
-        image: marketplace.gcr.io/google/kafka/zookeeper:2.8
-        imagePullPolicy: Never
-        # TODO: replace with local built image, local/kafka-base
+        image: local/kafka-base # TODO: config the image to deploy zookeeper ensemble of 3
+        imagePullPolicy: Never # N.B. build and load into minikube
         resources:
           requests:
             memory: "1250Mi"
@@ -100,9 +88,6 @@ spec:
           mountPath: /config-scripts # config is mounted at /config-scripts subdirectory
         - name: datadir # name of persistent volume claim
           mountPath: /data  # as line 76 of ZK_DATA_DIR
-          # mountPath: /opt/zookeeper  # persistent volume mounted path,
-          # but why this path? it's not the dataDir for zookeeper, that is set to /data
-          # maybe some mistake from google?
       securityContext:
         runAsUser: 1000
         fsGroup: 1000
@@ -120,3 +105,5 @@ spec:
       resources:
         requests:
           storage: 3Gi
+
+# TODO: how to deploy zookeeper ensemble with leader elections? try with docker-compose firstly
